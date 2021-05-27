@@ -2,14 +2,10 @@
 import telebot #importando a biblioteca pytelegrambotapi
 
 API_TOKEN = '1850427397:AAFkCK-eMgRvDTNthVWig-ekaG0rVXr2hvQ' #@botfather
-#testan
 
 bot = telebot.TeleBot(API_TOKEN) #telebot-sumário e TeleBot(comando) aplicando token
 
 #inicio
-
-variavel = variavel
-
 @bot.message_handler(commands=['start']) #recebo mensagem /start
 
 def send_welcome(message):
