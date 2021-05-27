@@ -8,6 +8,7 @@ bot = telebot.TeleBot(API_TOKEN) #telebot-sumário e TeleBot(comando) aplicando 
 #inicio
 
 variavel = variavel
+
 @bot.message_handler(commands=['start']) #recebo mensagem /start
 
 def send_welcome(message):
