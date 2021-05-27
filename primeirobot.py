@@ -2,7 +2,7 @@
 import telebot #importando a biblioteca pytelegrambotapi
 
 API_TOKEN = '1850427397:AAFkCK-eMgRvDTNthVWig-ekaG0rVXr2hvQ' #@botfather
-#test
+#testando
 
 bot = telebot.TeleBot(API_TOKEN) #telebot-sumário e TeleBot(comando) aplicando token
 
