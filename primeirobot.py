@@ -1,6 +1,12 @@
 #-- coding: utf-8 --
+from conexaobd import conexao
+import requests
 import telebot #importando a biblioteca pytelegrambotapi
+import time
 from telebot import types #esta selecionando a lib types que faz parte do telebot
+conexao = conexao()
+
+conexao.conectar()
 
 API_TOKEN = '1850427397:AAFkCK-eMgRvDTNthVWig-ekaG0rVXr2hvQ' #@botfather
 
@@ -26,4 +32,8 @@ def send_category(message):
 	markup.add('Lavagem Rapida','Lavagem Completa')#opções que deve aparecer para o cliente
 	msg_cat = bot.reply_to(message,"Escolha a categoria que você deseja:", reply_markup=markup)#qual das suas categorias você quer
 
-bot.polling() #escuta usuario
+while True:       # faz rodar para sempre
+	try:
+		bot.polling() #escuta usuario
+	except Exception:
+		time.sleep(15)
