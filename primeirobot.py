@@ -4,7 +4,7 @@ import requests
 import telebot #importando a biblioteca pytelegrambotapi
 import time
 from telebot import types #esta selecionando a lib types que faz parte do telebot
-import pymysql #biblioteca de conexao com o mysql
+conexao = conexao()
 
 conexao.conectar()
 
