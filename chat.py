@@ -21,19 +21,19 @@ class User:
 @bot.message_handler(commands=['start'])
 def welcome_message(message):
     try:
-        msg = bot.reply_to(message, 'Olá, seja bem vindo ao Bot de Lavanderia da UNIVR!')
         chatid = message.chat.id
-        bot.send_message(chatid, f'O id da nossa conversa é: {chatid}')
         cadastro, usuario = conexao.verifica_login(chatid)
         if cadastro:
             print(f'{usuario} acabou de iniciar o chat')
-            bot.reply_to(message, f'O que gostaria de fazer {usuario}?')
-            bot.send_message(chatid, 'Digite /lavar para realizar um novo pedido ou /pedidos para verificar o status de todos os seus pedidos anteriores.')
+            bot.reply_to(message, f'Olá, {usuario}! O que gostaria de fazer hoje?\nO ID da conversa é: {chatid} 🥳🥳')
+            bot.send_message(chatid, 'Digite uma das opções:\n\n\n/lavar - realiza um novo pedido\n/pedidos - verifica o status de todos os seus pedidos anteriores.')
             @bot.message_handler(commands=['lavar'])
             def inicia_compra(message):
                 compra = Lavar()
                 compra.realiza_compra(message)
         else:
+            msg = bot.reply_to(message, 'Olá, seja bem vindo ao Bot de Lavanderia da UNIVR!')
+            bot.send_message(chatid, f'O ID da nossa conversa é: {chatid}')
             novo = Cadastro()
             novo.new_user(message)
     except Exception as a:
