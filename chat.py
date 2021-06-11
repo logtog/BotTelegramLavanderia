@@ -1,11 +1,15 @@
 # -- coding: utf-8 --
 from conexaoBd import Conexao
 import telebot
+from telebot import types
+import time
+import datetime as dt
 
 conexao = Conexao()
 user_dict = {}
+order_dict = {}
 
-API_TOKEN = '1850427397:AAFkCK-eMgRvDTNthVWig-ekaG0rVXr2hvQ'
+API_TOKEN = 'TOKEN'
 bot = telebot.TeleBot(API_TOKEN, parse_mode=None)
 
 
@@ -18,6 +22,15 @@ class User:
         self.bairro_usuario = None
 
 
+class Order:
+    def __init__(self, id):
+        self.id = id
+        self.tipo = None
+        self.metodo = None
+        self.agendamento = None
+        self.status = None
+
+
 @bot.message_handler(commands=['start'])
 def welcome_message(message):
     try:
@@ -26,7 +39,9 @@ def welcome_message(message):
         if cadastro:
             print(f'{usuario} acabou de iniciar o chat')
             bot.reply_to(message, f'Olá, {usuario}! O que gostaria de fazer hoje?\nO ID da conversa é: {chatid} 🥳🥳')
-            bot.send_message(chatid, 'Digite uma das opções:\n\n\n/lavar - realiza um novo pedido\n/pedidos - verifica o status de todos os seus pedidos anteriores.')
+            bot.send_message(chatid,
+                             'Digite uma das opções:\n\n\n/lavar - realiza um novo pedido\n/pedidos - verifica o status de todos os seus pedidos anteriores.')
+
             @bot.message_handler(commands=['lavar'])
             def inicia_compra(message):
                 compra = Lavar()
@@ -135,7 +150,13 @@ def process_bairro_step(message):
         bot.reply_to(message,
                      f'Você foi cadastrado 🤩😁! Seja bem vindo {usuario}!!')
         bot.send_message(chatid,
-                         f'Digite /lavar para realizar um novo pedido ou /pedidos para verificar o status de todos os seus pedidos anteriores.')
+                         f'Digite uma das opções:\n\n\n/lavar - realiza um novo pedido\n/pedidos - verifica o status de todos os seus pedidos anteriores.')
+
+        @bot.message_handler(commands=['lavar'])
+        def inicia_compra(message):
+            compra = Lavar()
+            compra.realiza_compra(message)
+
         print(f'{usuario} está no chat')
     else:
         bot.send_message(chatid, 'Algo deu errado! irei retornar a etapa de cadastro.')
@@ -147,13 +168,54 @@ class Lavar:
     @staticmethod
     def realiza_compra(message):
         chatid = message.chat.id
-        msg = bot.reply_to(message, 'teste compra')
+        markup = types.ReplyKeyboardMarkup(one_time_keyboard=True)  # cria a opção
+        markup.add('Lavagem Rápida', 'Lavagem Completa')  # quais as categorias
+        msg = bot.reply_to(message, 'Que tipo de Lavagem gostaria de fazer?', reply_markup=markup)  # envia a opcao
+        bot.send_message(chatid,'"Dica😉:\n\nEscolha lavagem rápida caso seja até 7 peças, se for mais escolha completa!! Muitas peças podem gerar custo adicional."')
         bot.register_next_step_handler(msg, process_tipo_pedido_step)
 
 
 def process_tipo_pedido_step(message):
+    try:
+        chatid = message.chat.id
+        tipo = message.text
+        id = conexao.retorna_id(chatid)
+        order = Order(id[0])
+        order_dict[chatid] = order
+        if(tipo == u'Lavagem Rápida') or (tipo == u'Lavagem Completa'):
+            order.tipo = tipo
+            print(order.id)
+        else:
+            bot.send_message(chatid,'Use um dos botôes!!!')
+            raise Exception()
+        markup = types.ReplyKeyboardMarkup(one_time_keyboard=True)  # cria a opção
+        markup.add('Reserva', 'Coleta')  # quais as categorias
+        msg = bot.reply_to(message, 'Qual o método do pedido?', reply_markup=markup)
+        bot.send_message(chatid,'"DICA😉:\n\nReserva - é reservada uma máquina na lavanderia e o cliente vai na data reservada.\nColeta - o transporte coleta no endereço do cliente, faz a lavagem e depois o cliente busca."')
+        bot.register_next_step_handler(msg, process_metodo_step)
+    except Exception as a:
+        print(a)
+        bot.reply_to(message, 'Erro!! Iremos voltar para o inicio!')
+        erro = Lavar()
+        erro.realiza_compra(message)
+
+def process_metodo_step(message):
     chatid = message.chat.id
-    bot.send_message(chatid, 'process_tipo_pedido_step')
+    metodo = message.text
+    order = order_dict[chatid]
+    if (metodo == u'Reserva') or (metodo == u'Coleta'):
+        order.metodo = metodo
+        print(order.id)
+    else:
+        bot.send_message(chatid, 'Use um dos botôes!!!')
+        raise Exception()
+    msg = bot.reply_to(message, 'TESTE')
+    bot.register_next_step_handler(msg, process_agendamento_step)
+
+def  process_agendamento_step(message):
+    chatid = message.chat.id
+    bot.send_message(chatid,'process_agendamento_step')
+
 
 bot.enable_save_next_step_handlers(delay=2)  # step
 bot.load_next_step_handlers()

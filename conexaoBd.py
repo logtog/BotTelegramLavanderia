@@ -28,3 +28,13 @@ class Conexao():
         conn.close()
         nome = nome.split(' ')
         print(f'O {chatid} acabou de ser cadastrado como: ' + nome[0])
+
+    def retorna_id(self,chatid):
+        conn = pymysql.connect(host='127.0.0.1', unix_socket='/opt/lampp/var/mysql/mysql.sock', user='root',
+                               password=None, db='usuarios_telegram')
+        cur = conn.cursor()
+        cur.execute(f'SELECT id_usuario FROM usuario where chatid_usuario = {chatid}')
+        id = cur.fetchone()
+        cur.close()
+        conn.close()
+        return id
