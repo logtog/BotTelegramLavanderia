@@ -10,7 +10,7 @@ conexao = Conexao()
 user_dict = {}
 order_dict = {}
 interact_dict = {}
-API_TOKEN = '1850427397:AAEqnBDE43H_OitumWDVyogxI18DUa3ErUE'
+API_TOKEN = '1850427397:AAHygbmms8lW7ftfxuwjH7L5JjT9vOY2GKc'
 bot = telebot.TeleBot(API_TOKEN, parse_mode=None)
 
 
