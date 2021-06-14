@@ -5,7 +5,6 @@ from telebot import types
 from data import Data
 import time
 
-
 data = Data()
 conexao = Conexao()
 user_dict = {}
@@ -92,6 +91,8 @@ def welcome_message(message):
                         bot.reply_to(message, 'Você não é admin')
                         welcome_message(message)
 
+                resgate = message
+
                 @bot.message_handler(commands='interagirAdmin')
                 def pedidos_admin(message):
                     resgate = message
@@ -123,6 +124,8 @@ def welcome_message(message):
                     else:
                         bot.reply_to(message, 'Você não é admin')
                         welcome_message(message)
+
+                resgate = message
 
                 @bot.message_handler(commands='clienteAdmin')
                 def mensagem_admin(message):
@@ -167,6 +170,7 @@ def process_name_step(message):
         user = User(name)
         user_dict[chatid] = user
         msg = bot.reply_to(message, 'Qual é o seu Email?')
+        resgate = message
         bot.register_next_step_handler(msg, process_email_step)
     except Exception as a:
         print('Algo deu errado no process_name_step: ', a)
@@ -185,6 +189,7 @@ def process_email_step(message):
         user = user_dict[chatid]
         email = email.lower()
         user.email_usuario = email
+        resgate = message
         msg = bot.reply_to(message, 'Qual é a sua Rua? "Exemplo: Copacabana"')
         bot.register_next_step_handler(msg, process_rua_step)
     except Exception as a:
@@ -225,6 +230,7 @@ def process_numero_step(message):
         user = user_dict[chatid]
         user.numero_usuario = numero
         msg = bot.reply_to(message, 'Qual é o seu Bairro?')
+        resgate = message
         bot.register_next_step_handler(msg, process_bairro_step)
     except Exception as a:
         print('Algo deu errado no process_numero_step: ', a)
@@ -272,6 +278,7 @@ class Lavar:
             cadastro, usuario = conexao.verifica_login(chatid)
             print(usuario, 'acabou de iniciar o processo de pedido')
             markup = types.ReplyKeyboardMarkup(one_time_keyboard=True)  # cria a opção
+            resgate = message
             markup.add('Lavagem Rápida', 'Lavagem Completa')  # quais as categorias
             msg = bot.reply_to(message, 'Que tipo de Lavagem gostaria de fazer?', reply_markup=markup)  # envia a opcao
             bot.send_message(chatid,
@@ -293,6 +300,7 @@ def process_tipo_pedido_step(message):
             order.tipo = tipo
             markup = types.ReplyKeyboardMarkup(one_time_keyboard=True)  # cria a opção
             markup.add('Reserva', 'Coleta')  # quais as categorias
+            resgate = message
             msg = bot.reply_to(message, 'Qual o método do pedido?', reply_markup=markup)
             bot.send_message(chatid,
                              '"DICA😉:\n\nReserva - é reservada uma máquina na lavanderia e o cliente vai na data reservada.\nColeta - o transporte coleta no endereço do cliente de segunda a sexta (entre 8H até 11H e 14H até as 17H), faz a lavagem e depois o cliente busca."')
@@ -326,6 +334,7 @@ def process_metodo_step(message):
                     print(f'{usuario} fez um pedido de Coleta')
                     id_usuario = conexao.retorna_id(chatid)
                     id_usuario = int(id_usuario[0])
+                    resgate = message
                     id_pedido = conexao.retorna_id_pedido_admin(id_usuario)
                     admins = conexao.retorna_admins()
                     bot.reply_to(message,
@@ -363,6 +372,7 @@ def process_dia_step(message):
         order = order_dict[chatid]
         certo = data.verifica_digitado(dia, dia1, dia2)
         if certo:
+            resgate = message
             order.dia = dia
             markup = types.ReplyKeyboardMarkup(one_time_keyboard=True)  # cria a opção
             markup.add('8H', '9H', '10H', '11H', '14H', '15H', '16H', '17H', '18H')  # quais as categorias
@@ -398,6 +408,7 @@ def process_hora_step(message):
                 bot.send_message(chatid, 'Seu pedido já foi registrado! Aguardando ele ser lido.')
                 id_usuario = conexao.retorna_id(chatid)
                 id_usuario = int(id_usuario[0])
+                resgate = message
                 id_pedido = conexao.retorna_id_pedido_admin(id_usuario)
                 admins = conexao.retorna_admins()
                 if admins:
@@ -636,6 +647,7 @@ def cadastro_cliente_admin(message):
         print('algo deu errado no cadastro_cliente_admin: ')
         bot.reply_to(message, 'Erro!! Iremos voltar para o inicio!')
         welcome_message(message)
+
 
 while True:
     try:
