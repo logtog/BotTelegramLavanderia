@@ -55,4 +55,4 @@ class Data:
     @staticmethod
     def troca_forma(i):
         date_string = dt.datetime.strptime(str(i), '%Y-%m-%d %H:%M:%S')
-        return date_string.strftime('%d/%m/%Y %H:%M:%S')
+        return date_string.strftime('%d/%m/%Y às %H:%M:%S')

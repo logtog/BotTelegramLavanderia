@@ -1,4 +1,7 @@
 # -- coding: utf-8 --
 import chat
 
-u = chat.welcome_message()
+try:
+    chat.welcome_message('')
+except Exception as a:
+    chat.welcome_message('')
